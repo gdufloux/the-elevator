@@ -18,6 +18,22 @@ angular.module("elevator", []).
     };
   }).
   
+  // Call service for elevators that collect requests and complete them in call order
+  service("simpleStackCall", function simpleStackCallService(){
+    this.calls = [];
+    this.addFloor = function(n) {
+      this.calls.push(n);
+    };
+    this.nextFloor = function() {
+      return this.calls[0];
+    };
+    this.removeFloor = function(n) {
+      if (this.calls.indexOf(n) > -1) {
+        this.calls.splice(this.calls.indexOf(n), 1);
+      }
+    };
+  }).
+  
   // Elevator controller
   controller("ElevatorCtrl", ["$scope", "$interval", "singleCall", function ($scope, $interval, callService) {
     // Object representing the car
