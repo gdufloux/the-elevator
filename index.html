@@ -2,6 +2,8 @@
 <html ng-app="elevator">
   <head>
     <meta charset="utf-8">
+    <title>The Elevator</title>
+    
     <link rel="stylesheet" type="text/css" href="css/elevator.css">
     <script src="js/angular.min.js"></script>
     <script src="js/elevator.js" charset="UTF-8"></script>
@@ -42,5 +44,20 @@
       <button type="button" ng-click="car.stepIn()">Step in</button>
       <button type="button" ng-click="car.stepOut()">Step out</button>
     </section>
+    
+    <div class="clear"></div>
+    
+    <!-- Jasmine integration -->
+    <link rel="stylesheet" href="jasmine/lib/jasmine-2.3.4/jasmine.css">
+    <script src="jasmine/lib/jasmine-2.3.4/jasmine.js"></script>
+    <script src="jasmine/lib/jasmine-2.3.4/jasmine-html.js"></script>
+    <script src="jasmine/lib/jasmine-2.3.4/boot.js"></script>
+    <script src="js/angular-mocks.js"></script>
+    
+    <!-- Spec files -->
+    <script src="jasmine/spec/SpecHelper.js"></script>
+    <script src="jasmine/spec/ElevatorCtrlSpec.js"></script>
+    <script src="jasmine/spec/CallServiceSpec.js"></script>
+    
   </body>
 </html>
