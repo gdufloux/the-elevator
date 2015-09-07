@@ -33,9 +33,36 @@ angular.module("elevator", []).
       }
     };
   }).
+    
+  // Light service that controls the light (red or green) at each floor
+  service("floorLight", function floorLightService() {
+    this.floors = [];
+    this.setFloors = function(floors) {
+      this.floors = floors;
+    };
+    this.updateLights = function(upcomingFloors, car) {
+      var color;
+      function isUpcomingFloor(n) {
+        return upcomingFloors.indexOf(n) > -1;
+      }
+      if (upcomingFloors.length > 0) {
+        // car is busy, color relies on upcoming floors
+        this.floors.forEach(function (floor) {
+          color = isUpcomingFloor(floor.n) ? 'green' : 'red';
+          floor.light = color;
+        });
+      } else {
+        // car is stationary, color only relies on occupation
+        color = car.occupied ? 'red' : '';
+        this.floors.forEach(function (floor) {
+          floor.light = color;
+        });
+      }
+    };
+  }).
   
   // Elevator controller
-  controller("ElevatorCtrl", ["$scope", "$interval", "singleCall", function ($scope, $interval, callService) {
+  controller("ElevatorCtrl", ["$scope", "$interval", "singleCall", "floorLight", function ($scope, $interval, callService, lightService) {
     // Object representing the car
     var car = $scope.car = {
       active: function (n) {
@@ -97,6 +124,9 @@ angular.module("elevator", []).
       };
     });
 
+    // Setup floor light service
+    lightService.setFloors(floors);
+
     // The logic that moves the elevator 
     // Let's keep it outside $interval for testing reasons
     var move = $scope.move = function(n) {
@@ -111,6 +141,8 @@ angular.module("elevator", []).
           car.down();
         }
       }
+      var upcomingFloors = callService.calls;
+      lightService.updateLights(upcomingFloors, car);
     }
     
     $interval(function () {
