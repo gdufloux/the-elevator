@@ -23,6 +23,96 @@ describe("ElevatorCtrl: the elevator controller", function() {
     });
   });
   
+  // User controls
+  
+  describe("car#stepIn: action to enter the car", function() {
+    it("should be detected as an occupied car", function() {
+      scope.car.occupied = false
+      scope.car.stepIn();
+      expect(scope.car.occupied).toBe(true);
+    });
+  });
+  
+  describe("car#stepOut: action to leave the car", function() {
+    it("should be detected as an empty car", function() {
+      scope.car.occupied = true
+      scope.car.stepOut();
+      expect(scope.car.occupied).toBe(false);
+    });
+  });
+    
+  describe("car#canStepIn: conditions to enter the car", function() {
+    it("should be true when the car is stationary and open", function() {
+      scope.car.occupied = false;
+      scope.car.dir = 0;
+      scope.car.open = true;
+      expect(scope.car.canStepIn()).toBe(true);
+    });
+    it("should be false when the car is moving", function() {
+      scope.car.occupied = false;
+      scope.car.dir = 1;
+      scope.car.open = true;
+      expect(scope.car.canStepIn()).toBe(false);
+    });
+    it("should be false when the door is close", function() {
+      scope.car.occupied = false;
+      scope.car.dir = 1;
+      scope.car.open = false;
+      expect(scope.car.canStepIn()).toBe(false);
+    });
+    it("should be false when the car is occupied", function() {
+      scope.car.occupied = true;
+      scope.car.dir = 0;
+      scope.car.open = true;
+      expect(scope.car.canStepIn()).toBe(false);
+    });
+  });
+  
+  describe("car#canStepOut: conditions to leave the car", function() {
+    it("should be true when the car is stationary and open", function() {
+      scope.car.occupied = true;
+      scope.car.dir = 0;
+      scope.car.open = true;
+      expect(scope.car.canStepOut()).toBe(true);
+    });
+    it("should be false when the car is moving", function() {
+      scope.car.occupied = true;
+      scope.car.dir = 1;
+      scope.car.open = true;
+      expect(scope.car.canStepOut()).toBe(false);
+    });
+    it("should be false when the door is close", function() {
+      scope.car.occupied = true;
+      scope.car.dir = 1;
+      scope.car.open = false;
+      expect(scope.car.canStepOut()).toBe(false);
+    });
+    it("should be false when the car is empty", function() {
+      scope.car.occupied = false;
+      scope.car.dir = 0;
+      scope.car.open = true;
+      expect(scope.car.canStepOut()).toBe(false);
+    });
+  });
+  
+  describe("car#openDoor: action to open the car door", function() {
+    it("should set the car as open", function() {
+      scope.car.open = false;
+      scope.car.openDoor();
+      expect(scope.car.open).toBe(true);
+    });
+  });
+  
+  describe("car#closeDoor: action to close the car door", function() {
+    it("should set the car as close", function() {
+      scope.car.open = true;
+      scope.car.closeDoor();
+      expect(scope.car.open).toBe(false);
+    });
+  });
+  
+  // Car movement
+  
   describe("car#up: moves the car up", function() {
     it("should set direction to 1 and go to floor+1", function() {
       scope.car.floor = 1;

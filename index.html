@@ -40,9 +40,10 @@
 
     <section>
       <h2>User controls</h2>
-      <button type="button">Open car door</button>
-      <button type="button" ng-click="car.stepIn()">Step in</button>
-      <button type="button" ng-click="car.stepOut()">Step out</button>
+      <button type="button" ng-click="car.openDoor()" ng-show="!car.open">Open car door</button>
+      <button type="button" ng-click="car.closeDoor()" ng-show="car.open">Close car door</button>
+      <button type="button" ng-click="car.stepIn()" ng-disabled="!car.canStepIn()">Step in</button>
+      <button type="button" ng-click="car.stepOut()" ng-disabled="!car.canStepOut()">Step out</button>
     </section>
     
     <div class="clear"></div>

@@ -81,8 +81,15 @@ angular.module("elevator", []).
         // TODO
         return false;
       },
+      
       stepIn: function () { this.occupied = true },
       stepOut: function () { this.occupied = false },
+      
+      canStepIn: function() { return this.dir == 0 && this.open && !this.occupied },
+      canStepOut: function() { return this.dir == 0 && this.open && this.occupied },
+      
+      openDoor: function() { this.open = true },
+      closeDoor: function() { this.open = false },
       
       up: function() { this.dir = 1; this.floor += 1 },
       down: function() { this.dir = -1; this.floor -= 1 },
