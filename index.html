@@ -1,6 +1,7 @@
 <!doctype html>
 <html ng-app="elevator">
   <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="css/elevator.css">
     <script src="js/angular.min.js"></script>
     <script src="js/elevator.js" charset="UTF-8"></script>
@@ -16,7 +17,7 @@
           <td>{{floor.title}}</th>
           <td ng-class="floor.light">&#x25cf;</td>
           <td>
-            <button type="button">Call</button>
+            <button type="button" ng-click="floor.call()">Call</button>
             <button type="button" ng-disabled="!car.canOpen(floor.n)">Open door</button>
           </td>
         <tr>
