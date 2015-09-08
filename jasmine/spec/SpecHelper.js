@@ -20,6 +20,16 @@ beforeEach(function () {
           };
         }
       };
+    },
+    // Usage: expect(scope.car).toBeStopped();
+    toBeStopped: function () {
+      return {
+        compare: function (car) {
+          return {
+            pass: car.dir == 0
+          };
+        }
+      };
     }
   });
 });

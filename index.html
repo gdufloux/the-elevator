@@ -36,6 +36,7 @@
           <button class="stop" type="button" ng-disabled="!car.occupied" ng-click="panel.stop()">STOP</button>
         </li>
       </ul>
+      <div ng-show="panel.showOpenDoorWarning()">Please close car door</div>
     </section>
 
     <section>

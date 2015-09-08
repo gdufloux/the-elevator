@@ -118,6 +118,9 @@ angular.module("elevator", []).
         callService.addFloor(n);
       },
       stop: function () {
+      },
+      showOpenDoorWarning: function() {
+        return car.open && car.occupied && callService.calls.length > 0 
       }
     }
 
@@ -145,7 +148,11 @@ angular.module("elevator", []).
     var move = $scope.move = function(n) {
       var nextFloor = callService.nextFloor();
       if (nextFloor !== undefined) {
-        if (nextFloor == car.floor) {
+        if (car.open && car.occupied) {
+          // the elevator car shall not move if it's occupied _and_ the inner door is not shut (case stationary)
+          // stop immediately if the inner door is opened during travel (case moving)
+          car.stop();
+        } else if (nextFloor == car.floor) {
           car.stop();
           callService.removeFloor(nextFloor);
         } else if (car.outerDoorOpen()) {

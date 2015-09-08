@@ -56,3 +56,4 @@ not affect the evaluation of the solution.
 * Add logic that controls the light at each floor
 * Conditional user controls
 * Add logic that controls the outer doors at each floor
+* Add security logic associated to the inner door

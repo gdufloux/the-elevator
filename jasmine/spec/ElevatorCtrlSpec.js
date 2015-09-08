@@ -268,6 +268,62 @@ describe("ElevatorCtrl: the elevator controller", function() {
       expect(scope.floors[3].open).toBe(false);
       expect(scope.car.floor).toBe(3);
     });
+    
+    /*
+      For security purposes, the elevator car shall not move if it's occupied _and_
+      the inner door is not shut. Yes, this is an old design in an old building.
+    */
+    
+    it("should not move the car if it's occupied _and_ the inner door is not shut", function() {
+      scope.car.floor = 1;
+      scope.car.openDoor();
+      scope.car.stepIn();
+      scope.panel.press(3);
+      moves(2);
+      expect(scope.car.floor).toBe(1);
+    });
+    
+    it("should move the car if it's occupied _and_ the inner door is closed", function() {
+      scope.car.floor = 1;
+      scope.car.openDoor();
+      scope.car.stepIn();
+      scope.car.closeDoor();
+      scope.panel.press(3);
+      moves(2);
+      expect(scope.car.floor).toBe(3);
+    });
+    
+    /*
+      It should also stop immediately if the inner door is opened during travel.
+      In this app, though, "immediately" should mean "at the next one-second tick".
+    */
+    
+    it("should also stop immediately if the inner door is opened during travel", function() {
+      scope.car.floor = 1;
+      scope.car.openDoor();
+      scope.car.stepIn();
+      scope.car.closeDoor();
+      scope.panel.press(3);
+      moves(1);
+      expect(scope.car.floor).toBe(2);
+      scope.car.openDoor();
+      moves(1);
+      expect(scope.car.floor).toBe(2);
+      expect(scope.car.dir).toBe(0);
+    });
+    
+    /*
+      An unoccupied car can be called irregardless of its inner door status.
+    */
+    
+    it("should move the car if it's empty even if the inner door is not shut", function() {
+      scope.car.floor = 1;
+      scope.car.openDoor();
+      scope.panel.press(3);
+      moves(2);
+      expect(scope.car.floor).toBe(3);
+    });
+    
   });
   
 });
