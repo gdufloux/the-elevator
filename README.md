@@ -47,3 +47,11 @@ not affect the evaluation of the solution.
   In this app, though, "immediately" should mean "at the next one-second tick".
 * An unoccupied car can be called irregardless of its inner door status.
 * The car's `dir` property is supposed to be `-1`, `0` and `1`.
+
+## Changelog
+
+* Add Jasmine test environment
+* Add the basic logic that moves the elevator when calling the car
+* Add alternative service to collect call requests
+* Add logic that controls the light at each floor
+* Conditional user controls
