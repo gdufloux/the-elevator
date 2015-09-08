@@ -360,7 +360,7 @@ describe("ElevatorCtrl: the elevator controller", function() {
 
 describe("floorLight: the light service that controls the light at each floor", function() {
 
-  var lightService, car, floors, upcomingFloors;
+  var lightService, car, floors, calledFloors;
   
   beforeEach(function() {
     module('elevator');
@@ -375,31 +375,31 @@ describe("floorLight: the light service that controls the light at each floor", 
     lightService.setFloors(floors);
   });
   
-  describe("#updateLights: triggers the light update according to upcoming floors and car occupation", function() {
+  describe("#updateLights: triggers the light update according to called floors and car occupation", function() {
     /*
       Red should mean that the car is occupied, 
       green should mean that it's coming to this floor, 
       and no light should mean that it's free to call.
     */
     it("should turn lights red when car is occupied", function() {
-      upcomingFloors = [];
+      calledFloors = [];
       car.occupied = true;
-      lightService.updateLights(upcomingFloors, car);
+      lightService.updateLights(calledFloors, car);
       floors.forEach(function (floor) {
         expect(floor.light).toBe('red');
       });
     });
     it("should turn the light green at the floor the car is coming to", function() {
-      upcomingFloors = [5,8];
-      lightService.updateLights(upcomingFloors, car);
+      calledFloors = [5,8];
+      lightService.updateLights(calledFloors, car);
       expect(floors[5].light).toBe('green');
       expect(floors[6].light).toBe('red');
       expect(floors[8].light).toBe('green');
     });
     it("should turn lights off when car is free to call", function() {
-      upcomingFloors = [];
+      calledFloors = [];
       car.occupied = false;
-      lightService.updateLights(upcomingFloors, car);
+      lightService.updateLights(calledFloors, car);
       floors.forEach(function (floor) {
         expect(floor.light).toBe('');
       });

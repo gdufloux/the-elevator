@@ -19,7 +19,7 @@ angular.module("elevator", []).
     this.reset = function(n) {
       this.calls = [];
     };
-    this.isUpcomingFloor = function(n) {
+    this.calledFloor = function(n) {
       return this.calls.indexOf(n) > -1
     };
   }).
@@ -41,7 +41,7 @@ angular.module("elevator", []).
     this.reset = function(n) {
       this.calls = [];
     };
-    this.isUpcomingFloor = function(n) {
+    this.calledFloor = function(n) {
       return this.calls.indexOf(n) > -1
     };
   }).
@@ -52,15 +52,15 @@ angular.module("elevator", []).
     this.setFloors = function(floors) {
       this.floors = floors;
     };
-    this.updateLights = function(upcomingFloors, car) {
+    this.updateLights = function(calledFloors, car) {
       var color;
-      function isUpcomingFloor(n) {
-        return upcomingFloors.indexOf(n) > -1;
+      function calledFloor(n) {
+        return calledFloors.indexOf(n) > -1;
       }
-      if (upcomingFloors.length > 0) {
+      if (calledFloors.length > 0) {
         // car is busy, color relies on upcoming floors
         this.floors.forEach(function (floor) {
-          color = isUpcomingFloor(floor.n) ? 'green' : 'red';
+          color = calledFloor(floor.n) ? 'green' : 'red';
           floor.light = color;
         });
       } else {
@@ -124,10 +124,9 @@ angular.module("elevator", []).
       btnClass: function (n) {
         // This can be used to emulate a LED light near or inside the button
         // to give feedback to the user.
-/*         return car.active(n) ? 'currentFloor' : (callService.isUpcomingFloor(n) ? 'called' : null); */
         var cssClasses = [];
         if (car.active(n)) { cssClasses.push('currentFloor') };
-        if (callService.isUpcomingFloor(n)) { cssClasses.push('called') };
+        if (callService.calledFloor(n)) { cssClasses.push('called') };
         return cssClasses.join(' ');
       },
       press: function (n) {
@@ -181,8 +180,8 @@ angular.module("elevator", []).
           car.down();
         }
       }
-      var upcomingFloors = callService.calls;
-      lightService.updateLights(upcomingFloors, car);
+      var calledFloors = callService.calls;
+      lightService.updateLights(calledFloors, car);
     }
     
     $interval(function () {
