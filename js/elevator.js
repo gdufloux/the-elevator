@@ -77,23 +77,29 @@ angular.module("elevator", []).
         }
         return r;
       },
-      canOpen: function (n) {
-        // TODO
-        return false;
-      },
+      
+      openOuterDoor: function(n) { floors[n].open = true },
+      closeOuterDoor: function(n) { floors[n].open = false },
+      canOpenOuterDoor: function(n) { return this.stationary() && this.active(n) && !floors[n].open },
+      outerDoorOpen: function() { return floors[this.floor].open },
+      automaticOuterDoorOpening: false,
       
       stepIn: function () { this.occupied = true },
       stepOut: function () { this.occupied = false },
       
-      canStepIn: function() { return this.dir == 0 && this.open && !this.occupied },
-      canStepOut: function() { return this.dir == 0 && this.open && this.occupied },
+      canStepIn: function() { return this.stationary() && this.open && !this.occupied && this.outerDoorOpen(this.floor) },
+      canStepOut: function() { return this.stationary() && this.open && this.occupied && this.outerDoorOpen(this.floor) },
       
       openDoor: function() { this.open = true },
       closeDoor: function() { this.open = false },
       
       up: function() { this.dir = 1; this.floor += 1 },
       down: function() { this.dir = -1; this.floor -= 1 },
-      stop: function() { this.dir = 0 },
+      stop: function() { 
+        this.dir = 0; 
+        this.automaticOuterDoorOpening && this.openOuterDoor(this.floor);
+      },
+      stationary: function() { return this.dir == 0 },
       
       dir: 0,
       floor: 3,
@@ -142,6 +148,8 @@ angular.module("elevator", []).
         if (nextFloor == car.floor) {
           car.stop();
           callService.removeFloor(nextFloor);
+        } else if (car.outerDoorOpen()) {
+          car.closeOuterDoor(car.floor);
         } else if (nextFloor > car.floor) {
           car.up();
         } else {

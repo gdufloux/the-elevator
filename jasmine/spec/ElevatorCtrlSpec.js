@@ -12,6 +12,8 @@ describe("ElevatorCtrl: the elevator controller", function() {
     });
   });
   
+  // Car states
+  
   describe("car#active: indicate if the car is stationary at a given floor", function() {
     it("should be true when provided floor match current car floor", function() {
       scope.car.floor = 1;
@@ -24,6 +26,61 @@ describe("ElevatorCtrl: the elevator controller", function() {
   });
   
   // User controls
+  
+  describe("car#openOuterDoor: action to press the open door button at a given floor", function() {
+    it("should open the outer door", function() {
+      scope.floors[3].open = false;
+      scope.car.floor = 3;
+      scope.car.openOuterDoor(3);
+      expect(scope.floors[3].open).toBe(true);
+    });
+  });
+  
+  describe("car#closeOuterDoor: to close the outer door at a given floor", function() {
+    it("should close the outer door", function() {
+      scope.floors[3].open = true;
+      scope.car.floor = 3;
+      scope.car.closeOuterDoor(3);
+      expect(scope.floors[3].open).toBe(false);
+    });
+  });
+  
+  describe("car#canOpenOuterDoor: conditions to open the outer door", function() {
+    beforeEach(function() {
+      scope.floors[3].open = false;
+      scope.car.dir = 0;
+      scope.car.floor = 3;
+    });
+    it("should be locked when the car is not stationary", function() {
+      scope.car.dir = 1;
+      expect(scope.car.canOpenOuterDoor(3)).toBe(false);
+    });
+    it("should be locked when the car is not stationary at the given floor", function() {
+      scope.car.floor = 4;
+      expect(scope.car.canOpenOuterDoor(3)).toBe(false);
+    });
+    it("should be false if the outer door is already open", function() {
+      scope.floors[3].open = true;
+      expect(scope.car.canOpenOuterDoor(3)).toBe(false);
+    });
+    it("should be true when the car is stationary at the given floor", function() {
+      expect(scope.car.canOpenOuterDoor(3)).toBe(true);
+    });
+  });
+  
+  describe("car#outerDoorOpen: indicate if the outer door is open at the current car floor", function() {
+    beforeEach(function() {
+      scope.car.floor = 3;
+    });
+    it("should be true if the outer door is open", function() {
+      scope.floors[3].open = true;
+      expect(scope.car.outerDoorOpen()).toBe(true);
+    });
+    it("should be false if the outer door is closed", function() {
+      scope.floors[3].open = false;
+      expect(scope.car.outerDoorOpen()).toBe(false);
+    });
+  });
   
   describe("car#stepIn: action to enter the car", function() {
     it("should be detected as an occupied car", function() {
@@ -42,55 +99,57 @@ describe("ElevatorCtrl: the elevator controller", function() {
   });
     
   describe("car#canStepIn: conditions to enter the car", function() {
-    it("should be true when the car is stationary and open", function() {
+    beforeEach(function() {
       scope.car.occupied = false;
       scope.car.dir = 0;
       scope.car.open = true;
+      scope.floors[scope.car.floor].open = true;
+    });
+    it("should be true when the car is stationary and open", function() {
       expect(scope.car.canStepIn()).toBe(true);
     });
     it("should be false when the car is moving", function() {
-      scope.car.occupied = false;
       scope.car.dir = 1;
-      scope.car.open = true;
       expect(scope.car.canStepIn()).toBe(false);
     });
-    it("should be false when the door is close", function() {
-      scope.car.occupied = false;
-      scope.car.dir = 1;
+    it("should be false when the inner door is close", function() {
       scope.car.open = false;
       expect(scope.car.canStepIn()).toBe(false);
     });
     it("should be false when the car is occupied", function() {
       scope.car.occupied = true;
-      scope.car.dir = 0;
-      scope.car.open = true;
+      expect(scope.car.canStepIn()).toBe(false);
+    });
+    it("should be false when the outer door is close", function() {
+      scope.floors[scope.car.floor].open = false;
       expect(scope.car.canStepIn()).toBe(false);
     });
   });
   
   describe("car#canStepOut: conditions to leave the car", function() {
-    it("should be true when the car is stationary and open", function() {
+    beforeEach(function() {
       scope.car.occupied = true;
       scope.car.dir = 0;
       scope.car.open = true;
+      scope.floors[scope.car.floor].open = true;
+    });
+    it("should be true when the car is stationary and open", function() {
       expect(scope.car.canStepOut()).toBe(true);
     });
     it("should be false when the car is moving", function() {
-      scope.car.occupied = true;
       scope.car.dir = 1;
-      scope.car.open = true;
       expect(scope.car.canStepOut()).toBe(false);
     });
-    it("should be false when the door is close", function() {
-      scope.car.occupied = true;
-      scope.car.dir = 1;
+    it("should be false when the inner door is close", function() {
       scope.car.open = false;
       expect(scope.car.canStepOut()).toBe(false);
     });
     it("should be false when the car is empty", function() {
       scope.car.occupied = false;
-      scope.car.dir = 0;
-      scope.car.open = true;
+      expect(scope.car.canStepOut()).toBe(false);
+    });
+    it("should be false when the outer door is close", function() {
+      scope.floors[scope.car.floor].open = false;
       expect(scope.car.canStepOut()).toBe(false);
     });
   });
@@ -139,7 +198,27 @@ describe("ElevatorCtrl: the elevator controller", function() {
       scope.car.stop();
       expect(scope.car.dir).toBe(0);
     });
+    it("should open the outdoor if behavior enabled", function() {
+      scope.car.automaticOuterDoorOpening = true;
+      scope.car.floor = 1;
+      scope.floors[1].open = false;
+      scope.car.stop();
+      expect(scope.floors[1].open).toBe(true);
+    });
   });
+  
+  describe("car#stationary: indicate if the car is stopped", function() {
+    it("should be true when the car is stopped", function() {
+      scope.car.dir = 0;
+      expect(scope.car.stationary()).toBe(true);
+    });
+    it("should be false when the car is moving", function() {
+      scope.car.dir = 1;
+      expect(scope.car.stationary()).toBe(false);
+    });
+  });
+  
+  // Controls in car
   
   describe("panel#press: action to press a button on the panel of the car", function() {
     it("should register floor call", function() {
@@ -147,6 +226,8 @@ describe("ElevatorCtrl: the elevator controller", function() {
       expect(callService.calls).toContain(5);
     });
   });
+    
+  // Controls on floors
   
   describe("floor#call: action to press the call button at a given floor", function() {
     it("should register floor call", function() {
@@ -154,6 +235,8 @@ describe("ElevatorCtrl: the elevator controller", function() {
       expect(callService.calls).toContain(3);
     });
   });
+  
+  // Use cases
   
   describe("move: the logic that moves the elevator", function() {
     // Helper function to simulate timelapse
@@ -176,6 +259,14 @@ describe("ElevatorCtrl: the elevator controller", function() {
       scope.panel.press(1);
       moves(2);
       expect(scope.car.floor).toBe(1);
+    });
+    it("should automatically close the outer door before moving", function() {
+      scope.car.floor = 3;
+      scope.floors[3].open = true;
+      scope.panel.press(1);
+      moves(1);
+      expect(scope.floors[3].open).toBe(false);
+      expect(scope.car.floor).toBe(3);
     });
   });
   

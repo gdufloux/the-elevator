@@ -55,3 +55,4 @@ not affect the evaluation of the solution.
 * Add alternative service to collect call requests
 * Add logic that controls the light at each floor
 * Conditional user controls
+* Add logic that controls the outer doors at each floor
