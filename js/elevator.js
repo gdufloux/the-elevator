@@ -16,6 +16,9 @@ angular.module("elevator", []).
         this.calls.splice(this.calls.indexOf(n), 1);
       }
     };
+    this.reset = function(n) {
+      this.calls = [];
+    };
   }).
   
   // Call service for elevators that collect requests and complete them in call order
@@ -31,6 +34,9 @@ angular.module("elevator", []).
       if (this.calls.indexOf(n) > -1) {
         this.calls.splice(this.calls.indexOf(n), 1);
       }
+    };
+    this.reset = function(n) {
+      this.calls = [];
     };
   }).
     
@@ -118,6 +124,8 @@ angular.module("elevator", []).
         callService.addFloor(n);
       },
       stop: function () {
+        car.stop();
+        callService.reset();
       },
       showOpenDoorWarning: function() {
         return car.open && car.occupied && callService.calls.length > 0 

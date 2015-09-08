@@ -37,6 +37,14 @@ describe("singleCall: a call service for elevators that can fulfill one request 
       expect(callService.calls).not.toContain(5);
     });
   });
+  
+  describe("#reset: to unregister all floor calls from the stack", function() {
+    it("should remove all floor calls from the stack", function() {
+      callService.calls = [5];
+      callService.reset();
+      expect(callService.calls).toBeEmpty();
+    });
+  });
 
 });
 
@@ -76,6 +84,14 @@ describe("simpleStackCall: a call service for elevators that collect requests an
       callService.calls = [2,5,3];
       callService.removeFloor(5);
       expect(callService.calls).not.toContain(5);
+    });
+  });
+  
+  describe("#reset: to unregister all floor calls from the stack", function() {
+    it("should remove all floor calls from the stack", function() {
+      callService.calls = [2,5];
+      callService.reset();
+      expect(callService.calls).toBeEmpty();
     });
   });
 

@@ -226,7 +226,20 @@ describe("ElevatorCtrl: the elevator controller", function() {
       expect(callService.calls).toContain(5);
     });
   });
-    
+  
+  describe("panel#stop: action to press the emergency button in the car", function() {
+    it("should stop the car", function() {
+      scope.car.dir = 1;
+      scope.panel.stop();
+      expect(scope.car.dir).toBe(0);
+    });
+    it("should remove all floor calls from the stack", function() {
+      scope.panel.press(5);
+      scope.panel.stop();
+      expect(callService.calls.length).toBe(0);
+    });
+  });
+  
   // Controls on floors
   
   describe("floor#call: action to press the call button at a given floor", function() {

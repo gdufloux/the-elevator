@@ -57,3 +57,4 @@ not affect the evaluation of the solution.
 * Conditional user controls
 * Add logic that controls the outer doors at each floor
 * Add security logic associated to the inner door
+* Add logic for the stop button
