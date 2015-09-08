@@ -38,6 +38,15 @@ section li button {
 section li button.stop {
   color: red;
 }
+section li button .ledLight {
+  float: right;
+}
+section li button.called .ledLight {
+  color: green;
+}
+section li button.currentFloor .ledLight {
+  color: red;
+}
 tr {
   border: solid 1px black;
 }

@@ -58,3 +58,4 @@ not affect the evaluation of the solution.
 * Add logic that controls the outer doors at each floor
 * Add security logic associated to the inner door
 * Add logic for the stop button
+* Add LED light feedback inside panel buttons

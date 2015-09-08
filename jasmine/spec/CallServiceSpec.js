@@ -45,6 +45,17 @@ describe("singleCall: a call service for elevators that can fulfill one request 
       expect(callService.calls).toBeEmpty();
     });
   });
+  
+  describe("#isUpcomingFloor: indicate if the given floor is in the call stack", function() {
+    it("should be true when the floor is in the stack", function() {
+      callService.calls = [5];
+      expect(callService.isUpcomingFloor(5)).toBe(true);
+    });
+    it("should be false when the floor is not in the stack", function() {
+      callService.calls = [5];
+      expect(callService.isUpcomingFloor(3)).toBe(false);
+    });
+  });
 
 });
 
@@ -92,6 +103,17 @@ describe("simpleStackCall: a call service for elevators that collect requests an
       callService.calls = [2,5];
       callService.reset();
       expect(callService.calls).toBeEmpty();
+    });
+  });
+  
+  describe("#isUpcomingFloor: indicate if the given floor is in the call stack", function() {
+    it("should be true when the floor is in the stack", function() {
+      callService.calls = [2,5];
+      expect(callService.isUpcomingFloor(5)).toBe(true);
+    });
+    it("should be false when the floor is not in the stack", function() {
+      callService.calls = [2,5];
+      expect(callService.isUpcomingFloor(3)).toBe(false);
     });
   });
 

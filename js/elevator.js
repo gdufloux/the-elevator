@@ -19,6 +19,9 @@ angular.module("elevator", []).
     this.reset = function(n) {
       this.calls = [];
     };
+    this.isUpcomingFloor = function(n) {
+      return this.calls.indexOf(n) > -1
+    };
   }).
   
   // Call service for elevators that collect requests and complete them in call order
@@ -37,6 +40,9 @@ angular.module("elevator", []).
     };
     this.reset = function(n) {
       this.calls = [];
+    };
+    this.isUpcomingFloor = function(n) {
+      return this.calls.indexOf(n) > -1
     };
   }).
     
@@ -118,7 +124,11 @@ angular.module("elevator", []).
       btnClass: function (n) {
         // This can be used to emulate a LED light near or inside the button
         // to give feedback to the user.
-        return null;
+/*         return car.active(n) ? 'currentFloor' : (callService.isUpcomingFloor(n) ? 'called' : null); */
+        var cssClasses = [];
+        if (car.active(n)) { cssClasses.push('currentFloor') };
+        if (callService.isUpcomingFloor(n)) { cssClasses.push('called') };
+        return cssClasses.join(' ');
       },
       press: function (n) {
         callService.addFloor(n);

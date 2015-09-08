@@ -30,7 +30,9 @@
       <h2>Controls in car</h2>
       <ul>
         <li ng-repeat="floor in floors">
-          <button type="button" ng-disabled="!car.occupied" ng-click="panel.press(floor.n)" ng-class="panel.btnClass(floor.n)">{{floor.title}}</button>
+          <button type="button" ng-disabled="!car.occupied" ng-click="panel.press(floor.n)" ng-class="panel.btnClass(floor.n)">
+            {{floor.title}}<span class="ledLight">&#x25cf;</span>
+          </button>
         </li>
         <li>
           <button class="stop" type="button" ng-disabled="!car.occupied" ng-click="panel.stop()">STOP</button>

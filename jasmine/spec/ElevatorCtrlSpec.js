@@ -240,6 +240,23 @@ describe("ElevatorCtrl: the elevator controller", function() {
     });
   });
   
+  /* 
+    Used to emulate a LED light inside the button to give feedback to the user.
+  */
+  
+  describe("panel#btnClass: css class to control the LED light inside panel buttons", function() {
+    it("should include 'currentFloor' when the car is in front of the given floor", function() {
+      scope.car.floor = 4;
+      expect(scope.panel.btnClass(4)).toContain('currentFloor');
+      expect(scope.panel.btnClass(5)).not.toContain('currentFloor');
+    });
+    it("should include 'called' when the given floor is in the call stack", function() {
+      scope.panel.press(4);
+      expect(scope.panel.btnClass(4)).toContain('called');
+      expect(scope.panel.btnClass(5)).not.toContain('called');
+    });
+  });
+  
   // Controls on floors
   
   describe("floor#call: action to press the call button at a given floor", function() {
