@@ -59,3 +59,4 @@ not affect the evaluation of the solution.
 * Add security logic associated to the inner door
 * Add logic for the stop button
 * Add LED light feedback inside panel buttons
+* Add alternative service to optimize call requests
