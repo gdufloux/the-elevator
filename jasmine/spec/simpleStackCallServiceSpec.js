@@ -21,6 +21,11 @@ describe("simpleStackCall: a call service for elevators that collect requests an
       callService.addFloor(5);
       expect(callService.calls).toContain(5);
     });
+    it("should avoid duplicated calls", function() {
+      callService.calls = [2];
+      callService.addFloor(2);
+      expect(callService.calls).toEqual([2]);
+    });
   });
   
   describe("#nextFloor: to fetch the next target floor", function() {

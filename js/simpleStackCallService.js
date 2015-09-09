@@ -4,7 +4,9 @@ angular.module("elevator").
   service("simpleStackCall", function simpleStackCallService(){
     this.calls = [];
     this.addFloor = function(n) {
-      this.calls.push(n);
+      if (!this.calledFloor(n)) {
+        this.calls.push(n);
+      }
     };
     this.nextFloor = function() {
       return this.calls[0];
