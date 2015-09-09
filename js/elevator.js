@@ -1,7 +1,26 @@
 angular.module("elevator", []).
   
   // Elevator controller
-  controller("ElevatorCtrl", ["$scope", "$interval", "singleCall", "floorLight", function ($scope, $interval, callService, lightService) {
+  controller("ElevatorCtrl", ["$scope", "$interval", "floorLight", "singleCall", "simpleStackCall", "optimizedStackCall", 
+  function ($scope, $interval, lightService, singleCallService, simpleStackCallService, optimizedStackCallService) {
+    
+    // Available call algorithms
+    $scope.callAlgorithms = [
+      {service: singleCallService, description: "One request at a time"}, 
+      {service: simpleStackCallService, description: "Collect requests" },
+      {service: optimizedStackCallService, description: "Collect requests and optimize travel" }
+    ];
+    var getCallService = function() {
+      return $scope.settings.callAlgorithm.service;
+    };
+    
+    // Settings
+    $scope.debug = false;
+    $scope.settings = {
+      automaticOuterDoorOpening: false,
+      callAlgorithm: $scope.callAlgorithms[0]
+    };
+  
     // Object representing the car
     var car = $scope.car = {
       active: function (n) {
@@ -16,12 +35,20 @@ angular.module("elevator", []).
         }
         return r;
       },
+      display: function() {
+        var r = floors[this.floor].title + ' ';
+        switch (this.dir) {
+          case -1: r += "↑"; break;
+          case  1: r += "↓"; break;
+        }
+        return r;
+      },
       
       openOuterDoor: function(n) { floors[n].open = true },
       closeOuterDoor: function(n) { floors[n].open = false },
       canOpenOuterDoor: function(n) { return this.stationary() && this.active(n) && !floors[n].open },
       outerDoorOpen: function() { return floors[this.floor].open },
-      automaticOuterDoorOpening: false,
+      // automaticOuterDoorOpening: $scope.settings.automaticOuterDoorOpening,
       
       stepIn: function () { this.occupied = true },
       stepOut: function () { this.occupied = false },
@@ -36,7 +63,7 @@ angular.module("elevator", []).
       down: function() { this.dir = -1; this.floor -= 1 },
       stop: function() { 
         this.dir = 0; 
-        this.automaticOuterDoorOpening && this.openOuterDoor(this.floor);
+        $scope.settings.automaticOuterDoorOpening && this.openOuterDoor(this.floor);
       },
       stationary: function() { return this.dir == 0 },
       
@@ -53,18 +80,25 @@ angular.module("elevator", []).
         // to give feedback to the user.
         var cssClasses = [];
         if (car.active(n)) { cssClasses.push('currentFloor') };
-        if (callService.calledFloor(n)) { cssClasses.push('called') };
+        if (getCallService().calledFloor(n)) { cssClasses.push('called') };
         return cssClasses.join(' ');
       },
       press: function (n) {
-        callService.addFloor(n);
+        getCallService().addFloor(n);
       },
       stop: function () {
         car.stop();
-        callService.reset();
+        getCallService().reset();
+      },
+      calledFloors: function() {
+        var titles = [];
+        getCallService().calls.forEach(function(n) {
+          titles.push(floors[n].title);
+        });
+        return titles.join(', ');
       },
       showOpenDoorWarning: function() {
-        return car.open && car.occupied && callService.calls.length > 0 
+        return car.open && car.occupied && getCallService().calls.length > 0 
       }
     }
 
@@ -80,7 +114,7 @@ angular.module("elevator", []).
       floor.open = false;
       floor.light = null;
       floor.call = function () {
-        callService.addFloor(this.n);
+        getCallService().addFloor(this.n);
       };
     });
 
@@ -90,7 +124,8 @@ angular.module("elevator", []).
     // The logic that moves the elevator 
     // Let's keep it outside $interval for testing reasons
     var move = $scope.move = function(n) {
-      var nextFloor = callService.nextFloor();
+      var callService = getCallService(); 
+      var nextFloor = callService.nextFloor(car.floor);
       if (nextFloor !== undefined) {
         if (car.open && car.occupied) {
           // the elevator car shall not move if it's occupied _and_ the inner door is not shut (case stationary)

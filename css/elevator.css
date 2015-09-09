@@ -47,6 +47,11 @@ section li button.called .ledLight {
 section li button.currentFloor .ledLight {
   color: red;
 }
+section .carDisplay {
+  margin: 1em auto; 
+  width: 44px; border: 1px solid; 
+  text-align: center;
+}
 tr {
   border: solid 1px black;
 }

@@ -60,3 +60,4 @@ not affect the evaluation of the solution.
 * Add logic for the stop button
 * Add LED light feedback inside panel buttons
 * Add alternative service to optimize call requests
+* Settings and display goodies

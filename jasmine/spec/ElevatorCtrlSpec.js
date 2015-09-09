@@ -199,7 +199,8 @@ describe("ElevatorCtrl: the elevator controller", function() {
       expect(scope.car.dir).toBe(0);
     });
     it("should open the outdoor if behavior enabled", function() {
-      scope.car.automaticOuterDoorOpening = true;
+      // scope.car.automaticOuterDoorOpening = true;
+      scope.settings.automaticOuterDoorOpening = true;
       scope.car.floor = 1;
       scope.floors[1].open = false;
       scope.car.stop();
@@ -268,7 +269,7 @@ describe("ElevatorCtrl: the elevator controller", function() {
   
   // Use cases
   
-  describe("move: the logic that moves the elevator", function() {
+  describe("#move: the logic that moves the elevator", function() {
     // Helper function to simulate timelapse
     function moves(n) {
       for (var i=1; i<=n; i++) scope.move();
@@ -353,6 +354,112 @@ describe("ElevatorCtrl: the elevator controller", function() {
       moves(2);
       expect(scope.car.floor).toBe(3);
     });
+    
+    /*
+      Some elevators can fulfill one request at a time, others collect requests and
+      complete them in floor order. The algorithm choice is up to you, but the
+      smarter the better!
+    */
+    
+    describe("with the singleCall algorithm", function(){
+      beforeEach(function() {
+        inject(function (_singleCall_) {
+          callService = _singleCall_;
+          scope.settings.callAlgorithm = {service: callService};
+        });
+      });
+      it("should complete a single request", function() {
+        scope.car.floor = 1;
+        scope.panel.press(3);
+        expect(callService.calls).toEqual([3]);
+        
+        moves(2);
+        expect(scope.car.floor).toBe(3);
+        moves(1); // stopped here during one tick
+        expect(scope.car).toBeStopped();
+      });
+    });
+    
+    describe("with the simpleStackCall algorithm", function(){
+      beforeEach(function() {
+        inject(function (_simpleStackCall_) {
+          callService = _simpleStackCall_;
+          scope.settings.callAlgorithm = {service: callService};
+        });
+      });
+      /*
+        #move : car { floor:2, dir:1 }
+        #move : car { floor:3, dir:1 }
+        #move : car { floor:3, dir:0 }
+        #move : car { floor:4, dir:1 }
+        #move : car { floor:5, dir:1 }
+        #move : car { floor:6, dir:1 }
+        #move : car { floor:7, dir:1 }
+        #move : car { floor:8, dir:1 }
+        #move : car { floor:8, dir:0 }
+      */
+      it("should collect requests and complete them in arrival order", function() {
+        scope.car.floor = 1;
+        scope.panel.press(3);
+        scope.panel.press(8);
+        expect(callService.calls).toEqual([3,8]);
+        
+        moves(2);
+        expect(scope.car.floor).toBe(3);
+        moves(1); // stopped here during one tick
+        expect(scope.car).toBeStopped();
+        
+        moves(5);
+        expect(scope.car.floor).toBe(8);
+        moves(1); // stopped here during one tick
+        expect(scope.car).toBeStopped();
+      });
+    });
+    
+    describe("with the optimizedStackCall algorithm", function(){
+      beforeEach(function() {
+        inject(function (_optimizedStackCall_) {
+          callService = _optimizedStackCall_;
+          scope.settings.callAlgorithm = {service: callService};
+        });
+      });
+      /*
+        moves debug:
+        #move : car { floor:2, dir:1 }
+        #move : car { floor:3, dir:1 }
+        #move : car { floor:3, dir:0 }
+        #move : car { floor:4, dir:1 }
+        #move : car { floor:5, dir:1 }
+        #move : car { floor:5, dir:0 }
+        #move : car { floor:6, dir:1 }
+        #move : car { floor:7, dir:1 }
+        #move : car { floor:8, dir:1 }
+        #move : car { floor:8, dir:0 } 
+      */
+      it("should collect requests and complete them in floor order", function() {
+        scope.car.floor = 1;
+        scope.panel.press(3);
+        scope.panel.press(8);
+        scope.panel.press(5);
+        expect(callService.calls).toEqual([3,8,5]);
+        
+        moves(2);
+        expect(scope.car.floor).toBe(3);
+        moves(1); // stopped here during one tick
+        expect(scope.car).toBeStopped();
+        
+        moves(2);
+        expect(scope.car.floor).toBe(5);
+        moves(1); // stopped here during one tick
+        expect(scope.car).toBeStopped();
+        
+        moves(3);
+        expect(scope.car.floor).toBe(8);
+        moves(1); // stopped here during one tick
+        expect(scope.car).toBeStopped();
+      });
+    });
+
     
   });
   
